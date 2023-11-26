@@ -162,6 +162,29 @@ export default {
     subscribe() {
       this.isSubscribed = true;
       alert("Subscribed with " + this.email);
+
+      /*
+      import emailjs from 'emailjs-com';
+       data() {
+        return {
+          email: {
+            to: '',
+            subject: '',
+            message: ''
+          }
+        };
+      },
+      methods: {
+        sendEmail() {
+          // Замените 'your_service_id', 'your_template_id', и 'your_user_id' на ваши значения из EmailJS
+          emailjs.send('your_service_id', 'your_template_id', this.email, 'your_user_id')
+              .then((result) => {
+                console.log('Email successfully sent!', result.text);
+              }, (error) => {
+                console.log('Failed to send email:', error.text);
+              });
+        }
+      }*/
     },
     unsubscribe() {
       this.isSubscribed = false;
@@ -298,5 +321,18 @@ export default {
 }
 .details-col {
   border-left: 1px solid rgba(0,0,0,.1); /* Добавляем линию для визуального разделения */
+}
+
+
+.text-end {
+  text-align: right; /* Выравнивание текста по правому краю */
+}
+
+.text-start {
+  text-align: left; /* Выравнивание текста по левому краю */
+}
+
+.details-col {
+  /* ... ваш стиль ... */
 }
 </style>
