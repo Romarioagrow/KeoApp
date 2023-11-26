@@ -69,7 +69,7 @@
             </v-btn>
             <v-btn
                 color="primary"
-                @click="show_vacancies"
+                @click="fetchData"
                 block="true"
             >
               Просмотреть вакансии
@@ -77,22 +77,10 @@
           </v-col>
         </v-row>
         <v-row>
-<!--          <Vacancies/>-->
           <v-row>
             <h2>
               Vacancies
             </h2>
-          </v-row>
-          <v-row>
-            <v-btn slim="true">
-              Back
-            </v-btn>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field v-model="vacancyId" label="Vacancy ID"></v-text-field>
-              <v-btn @click="fetchData">Fetch Data</v-btn>
-            </v-col>
           </v-row>
           <v-row>
             <!-- Отображение данных здесь -->
@@ -110,15 +98,12 @@
 import axios from "axios";
 export default {
   name: 'App',
-  components: {
-    //Vacancies
-  },
+  components: {},
   data() {
     return {
       profession: '',
-      professions: ['Backend', 'Frontend', 'Fullstack', 'Manager', 'Analyst'],
       city: '',
-      cities: ['Москва', 'Санкт-Петербург', 'Екатеринбург', 'Челябинск', 'Remote'],
+      cities: ['Москва', 'Санкт-Петербург', 'Екатеринбург', 'Челябинск'],
       salary: '',
       salaries: ['40000', '60000', '80000', '100000', '150000', '200000' ],
       email: '',
@@ -143,9 +128,6 @@ export default {
       this.isSubscribed = false;
       alert("Unsubscribed");
     },
-    show_vacancies() {
-      alert("Showing soon...");
-    },
     fetchData() {
       //const apiUrl = `https://api.hh.ru/negotiations/somecollection?vacancy_id=${this.vacancyId}`;
       //const apiUrl = `https://api.hh.ru/vacancies?area=113`;
@@ -168,18 +150,16 @@ https://api.hh.ru/vacancies?text="Аналитик"&area=104&salary=100000
 104 чилик
       * */
 
-       let profession = this.profession;
-       let city = '';
-       let salary = this.salary;
-       let isRemote = this.isRemote;
-
-//      cities: ['Москва', 'Санкт-Петербург', 'Екатеринбург', 'Челябинск', 'Remote'],
+      let profession = this.profession;
+      let city = '';
+      let salary = this.salary;
+      let isRemote = this.isRemote;
 
       switch (this.city) {
-         case "Москва": city = '1'; break
-         case "Санкт-Петербург": city = '2'; break
-         case "Екатеринбург": city = '3'; break
-         case "Челябинск": city = '104'; break
+        case "Москва": city = '1'; break
+        case "Санкт-Петербург": city = '2'; break
+        case "Екатеринбург": city = '3'; break
+        case "Челябинск": city = '104'; break
       }
 
       const apiUrl = this.apiData.baseUrl + 'text=' + profession + (isRemote ? '&remote=true' : '') + '&area=' + city + '&salary=' + salary;
