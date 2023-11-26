@@ -6,7 +6,7 @@
         <v-row>
           <v-col cols="12" sm="3">
             <v-text-field
-                label="Profession"
+                label="Профессия"
                 v-model="profession"
                 name="Профессия"
             ></v-text-field>
@@ -15,7 +15,7 @@
             <v-select
                 v-model="city"
                 :items="cities"
-                label="City"
+                label="Локация"
                 outlined
                 dense
             ></v-select>
@@ -24,14 +24,14 @@
             <v-select
                 v-model="salary"
                 :items="salaries"
-                label="Salary"
+                label="Зарплата"
                 outlined
                 dense
             ></v-select>
           </v-col>
           <v-col cols="12" sm="3">
             <input type="checkbox" id="checkbox"  v-model="isRemote">
-            <label for="checkbox">{{ "Remote" }}</label>
+            <label for="checkbox">{{ "Удаленно" }}</label>
           </v-col>
         </v-row>
         <v-row>
@@ -39,14 +39,12 @@
             <v-text-field
                 v-model="email"
                 label="Email"
-                placeholder="Enter your email"
+                placeholder="Электронная почта"
                 outlined
                 dense
             ></v-text-field>
           </v-col>
         </v-row>
-
-
         <v-row justify="center">
           <v-col cols="12" sm="6" md="4">
             <v-btn
@@ -57,7 +55,7 @@
                 :disabled="isSubscribed"
                 class="mb-2"
             >
-              Subscribe
+              Подписаться на рассылку
             </v-btn>
             <v-btn
                 color="error"
@@ -65,7 +63,7 @@
                 block="true"
                 :disabled="!isSubscribed"
             >
-              Unsubscribe
+              Отдписаться от рассылки
             </v-btn>
             <v-btn
                 color="primary"
@@ -76,47 +74,39 @@
             </v-btn>
           </v-col>
         </v-row>
-        <v-row>
-          <v-row>
-            <h2>
-              Vacancies
-            </h2>
-          </v-row>
-<!--          <v-row>
-            &lt;!&ndash; Отображение данных здесь &ndash;&gt;
-            <div v-if="responseData">
-              <pre>{{ responseData }}</pre>
-            </div>
-          </v-row>-->
-        </v-row>
-
         <v-container>
+          <v-row>
+            <v-col>
+              <h2>
+                Вакансии
+              </h2>
+            </v-col>
+          </v-row>
           <!-- Используем v-if для проверки наличия данных перед рендерингом -->
           <v-row v-if="responseData && responseData.items && responseData.items.length > 0">
             <!-- Перебираем массив вакансий с помощью v-for -->
             <v-col cols="12" v-for="(vacancy, index) in responseData.items" :key="index">
               <v-card class="mb-4" outlined>
                 <v-row no-gutters>
-                  <v-col cols="4" class="pa-4">
+                  <v-col cols="9" class="pa-4">
                     <div class="headline">{{ vacancy.name }}</div>
                     <div class="subheading">{{ vacancy.area.name }}</div>
-                    <div v-if="vacancy.salary">
-                      <div class="body-2">Зарплата:</div>
-                      <div>
-                        <span v-if="vacancy.salary.from">от {{ vacancy.salary.from }}</span>
+                    <div>Тип: {{ vacancy.type.name }}</div>
+                    <div>Опубликовано: {{ formatDate(vacancy.published_at) }}</div>
+                    <div v-html="removeHighlightText(vacancy.snippet.requirement)"></div>
+                    <div>{{ vacancy.snippet.responsibility }}</div>
+                  </v-col>
+                  <v-col cols="3" class="pa-4 details-col">
+                    <div class="details">
+                      <div v-if="vacancy.salary" class="py-2">
+                        <span v-if="vacancy.salary.from" class="body-2">Зарплата: от {{ vacancy.salary.from }}</span>
                         <span v-if="vacancy.salary.to">до {{ vacancy.salary.to }}</span>
                         <span>{{ vacancy.salary.currency }}</span>
                       </div>
+                      <div>График: {{ vacancy.schedule.name }}</div>
+                      <div>Опыт: {{ vacancy.experience.name }}</div>
+                      <div>Занятость: {{ vacancy.employment.name }}</div>
                     </div>
-                    <div>Тип: {{ vacancy.type.name }}</div>
-                    <div>Опубликовано: {{ formatDate(vacancy.published_at) }}</div>
-                  </v-col>
-                  <v-col cols="8" class="pa-4">
-                    <div v-html="formatHighlight(vacancy.snippet.requirement)"></div>
-                    <div>{{ vacancy.snippet.responsibility }}</div>
-                    <div>График: {{ vacancy.schedule.name }}</div>
-                    <div>Опыт: {{ vacancy.experience.name }}</div>
-                    <div>Занятость: {{ vacancy.employment.name }}</div>
                   </v-col>
                 </v-row>
                 <v-card-actions>
@@ -165,10 +155,9 @@ export default {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
       return new Date(dateString).toLocaleDateString('ru-RU', options);
     },
-    formatHighlight(text) {
+    removeHighlightText(text) {
       if (!text) return '';
-      return text.replace(/<highlighttext>/g, '<span class="highlight">')
-          .replace(/<\/highlighttext>/g, '</span>');
+      return text.replace(/<highlighttext>/g, '').replace(/<\/highlighttext>/g, '');
     },
     subscribe() {
       this.isSubscribed = true;
@@ -179,27 +168,6 @@ export default {
       alert("Unsubscribed");
     },
     fetchData() {
-      //const apiUrl = `https://api.hh.ru/negotiations/somecollection?vacancy_id=${this.vacancyId}`;
-      //const apiUrl = `https://api.hh.ru/vacancies?area=113`;
-      /*
-      *
-      * Саня, [26.11.2023 20:45]
-https://api.hh.ru/vacancies?remote=true&salary_from=150000
-
-Саня, [26.11.2023 20:46]
-https://api.hh.ru/vacancies?remote=true
-
-Саня, [26.11.2023 20:46]
-https://api.hh.ru/vacancies?text="Аналитик"&area=104&salary=100000
-      *
-      *
-      *
-      * 1 сосква
-2 питер
-3 екб
-104 чилик
-      * */
-
       let profession = this.profession;
       let city = '';
       let salary = this.salary;
@@ -214,12 +182,10 @@ https://api.hh.ru/vacancies?text="Аналитик"&area=104&salary=100000
       }
 
       const apiUrl = this.apiData.baseUrl + 'text=' + profession + (isRemote ? '&remote=true' : '') + '&area=' + city + '&salary=' + salary;
-
       console.log(apiUrl);
 
-      // Сам запрос на HH
-
-      /*this.*/axios.get(apiUrl)
+      // Запрос на HH
+      axios.get(apiUrl)
           .then(response => {
             this.responseData = response.data;
           })
@@ -249,7 +215,6 @@ https://api.hh.ru/vacancies?text="Аналитик"&area=104&salary=100000
 .v-select, .v-text-field {
   margin-bottom: 16px;
 }
-
 
 .checkbox-active .v-label {
   font-weight: bold; /* Сделать текст жирным при активации чекбокса */
@@ -315,5 +280,23 @@ https://api.hh.ru/vacancies?text="Аналитик"&area=104&salary=100000
 .highlight {
   background-color: #FFEB3B;
   padding: 0 4px;
+}
+
+
+.headline {
+  font-size: 20px; /* Увеличиваем размер шрифта для заголовка */
+}
+.subheading {
+  color: #5C6BC0; /* Добавляем цвет подзаголовку */
+}
+.body-2 {
+  font-weight: bold; /* Делаем текст жирным */
+}
+.details {
+  font-size: 14px; /* Размер шрифта для деталей вакансии */
+  text-align: right; /* Выравниваем текст деталей вакансии по правому краю */
+}
+.details-col {
+  border-left: 1px solid rgba(0,0,0,.1); /* Добавляем линию для визуального разделения */
 }
 </style>
