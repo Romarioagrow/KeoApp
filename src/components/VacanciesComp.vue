@@ -26,29 +26,42 @@
 </template>
 
 <script>
-import axios from 'axios';
+//import axios from 'axios';
 
 export default {
   data() {
     return {
       vacancyId: '',
-      responseData: null
+      responseData: null,
+      apiData: {
+        baseUrl: 'https://api.hh.ru/vacancies?',
+
+      }
     };
   },
   methods: {
     fetchData() {
       //const apiUrl = `https://api.hh.ru/negotiations/somecollection?vacancy_id=${this.vacancyId}`;
-      const apiUrl = `https://api.hh.ru/vacancies?area=113`;
+      //const apiUrl = `https://api.hh.ru/vacancies?area=113`;
+
+
+     /* let profession;
+      let city;
+      let salary;
+      let isRemote;
+
+      const apiUrl =*/
+
 
       // Сам запрос на HH
-      axios.get(apiUrl)
+      /*axios.get(apiUrl)
           .then(response => {
             this.responseData = response.data;
           })
           .catch(error => {
             console.error("Error fetching data:", error);
             this.responseData = null;
-          });
+          });*/
     },
     // Методы для отправки данных на почту и другие действия
   }
