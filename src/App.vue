@@ -82,13 +82,55 @@
               Vacancies
             </h2>
           </v-row>
-          <v-row>
-            <!-- Отображение данных здесь -->
+<!--          <v-row>
+            &lt;!&ndash; Отображение данных здесь &ndash;&gt;
             <div v-if="responseData">
               <pre>{{ responseData }}</pre>
             </div>
-          </v-row>
+          </v-row>-->
         </v-row>
+
+        <v-container>
+          <!-- Используем v-if для проверки наличия данных перед рендерингом -->
+          <v-row v-if="responseData && responseData.items && responseData.items.length > 0">
+            <!-- Перебираем массив вакансий с помощью v-for -->
+            <v-col cols="12" v-for="(vacancy, index) in responseData.items" :key="index">
+              <v-card class="mb-4" outlined>
+                <v-row no-gutters>
+                  <v-col cols="4" class="pa-4">
+                    <div class="headline">{{ vacancy.name }}</div>
+                    <div class="subheading">{{ vacancy.area.name }}</div>
+                    <div v-if="vacancy.salary">
+                      <div class="body-2">Зарплата:</div>
+                      <div>
+                        <span v-if="vacancy.salary.from">от {{ vacancy.salary.from }}</span>
+                        <span v-if="vacancy.salary.to">до {{ vacancy.salary.to }}</span>
+                        <span>{{ vacancy.salary.currency }}</span>
+                      </div>
+                    </div>
+                    <div>Тип: {{ vacancy.type.name }}</div>
+                    <div>Опубликовано: {{ formatDate(vacancy.published_at) }}</div>
+                  </v-col>
+                  <v-col cols="8" class="pa-4">
+                    <div v-html="formatHighlight(vacancy.snippet.requirement)"></div>
+                    <div>{{ vacancy.snippet.responsibility }}</div>
+                    <div>График: {{ vacancy.schedule.name }}</div>
+                    <div>Опыт: {{ vacancy.experience.name }}</div>
+                    <div>Занятость: {{ vacancy.employment.name }}</div>
+                  </v-col>
+                </v-row>
+                <v-card-actions>
+                  <v-btn :href="vacancy.alternate_url" text color="primary" target="_blank">Подробнее</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-row v-else>
+            <v-col class="text-center">
+              <span>Данные о вакансиях не найдены.</span>
+            </v-col>
+          </v-row>
+        </v-container>
       </v-container>
     </v-main>
   </v-app>
@@ -103,7 +145,7 @@ export default {
     return {
       profession: '',
       city: '',
-      cities: ['Москва', 'Санкт-Петербург', 'Екатеринбург', 'Челябинск'],
+      cities: ['Москва', 'Санкт-Петербург', 'Екатеринбург', 'Челябинск', 'Россия'],
       salary: '',
       salaries: ['40000', '60000', '80000', '100000', '150000', '200000' ],
       email: '',
@@ -115,11 +157,19 @@ export default {
       responseData: null,
       apiData: {
         baseUrl: 'https://api.hh.ru/vacancies?',
-
-      }
+      },
     };
   },
   methods: {
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString('ru-RU', options);
+    },
+    formatHighlight(text) {
+      if (!text) return '';
+      return text.replace(/<highlighttext>/g, '<span class="highlight">')
+          .replace(/<\/highlighttext>/g, '</span>');
+    },
     subscribe() {
       this.isSubscribed = true;
       alert("Subscribed with " + this.email);
@@ -160,6 +210,7 @@ https://api.hh.ru/vacancies?text="Аналитик"&area=104&salary=100000
         case "Санкт-Петербург": city = '2'; break
         case "Екатеринбург": city = '3'; break
         case "Челябинск": city = '104'; break
+        case "Россия": city = '113'; break
       }
 
       const apiUrl = this.apiData.baseUrl + 'text=' + profession + (isRemote ? '&remote=true' : '') + '&area=' + city + '&salary=' + salary;
@@ -167,7 +218,8 @@ https://api.hh.ru/vacancies?text="Аналитик"&area=104&salary=100000
       console.log(apiUrl);
 
       // Сам запрос на HH
-      axios.get(apiUrl)
+
+      /*this.*/axios.get(apiUrl)
           .then(response => {
             this.responseData = response.data;
           })
@@ -223,6 +275,45 @@ https://api.hh.ru/vacancies?text="Аналитик"&area=104&salary=100000
   font-size: 24px; /* Размер иконки */
 }
 
+.highlight {
+  background-color: yellow;
+}
 
+.highlight {
+  background-color: #FFEB3B; /* Подсветка для текста */
+}
 
+.v-card {
+  box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.v-card:hover {
+  box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+}
+
+.v-card-horizontal .v-card__text {
+  border-left: 1px solid rgba(0,0,0,.1);
+}
+
+.headline {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.subheading {
+  font-size: 16px;
+  color: #5C6BC0;
+  font-weight: bold;
+}
+
+.body-2 {
+  font-size: 14px;
+  color: rgba(0,0,0,.6);
+}
+
+.highlight {
+  background-color: #FFEB3B;
+  padding: 0 4px;
+}
 </style>
